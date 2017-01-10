@@ -1,0 +1,13 @@
+title: "Default Configuration"
+type: "object"
+properties:
+  options:
+    title: "Options"
+    type: "object"
+    properties:
+      numleds:
+        title: "Number of LEDS"
+        type: "integer"
+        default: 50
+    required: [
+    ]

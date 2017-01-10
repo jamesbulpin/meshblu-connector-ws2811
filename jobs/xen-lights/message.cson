@@ -1,0 +1,13 @@
+title: 'XenLights'
+type: 'object'
+properties:
+  data:
+    type: 'object'
+    properties:
+      mode:
+        type: 'string'
+      color:
+        type: 'string'
+    required: [
+      'mode'
+    ]

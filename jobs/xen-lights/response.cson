@@ -1,0 +1,6 @@
+title: 'XenLights'
+type: 'object'
+properties:
+  data:
+    type: 'object'
+    required: []

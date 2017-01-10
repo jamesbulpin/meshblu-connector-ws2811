@@ -1,0 +1,4 @@
+angular: [
+  { key: "data.mode" }
+  { key: "data.color" }
+]
