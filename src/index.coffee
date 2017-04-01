@@ -5,13 +5,15 @@ tinycolor       = require 'tinycolor2'
 
 class SayHello extends EventEmitter
   constructor: ->
-    @numleds = 50
+    @numleds = 144
     @offset = 0
     @color = "red"
     @mode = "colorwheel"
-    ws281x.init 50
-    @pixelData = new Uint32Array(50)
-    @modulate = new Uint32Array(50)
+    @slide = 0
+    @slidemax = 144
+    ws281x.init 144
+    @pixelData = new Uint32Array(144)
+    @modulate = new Uint32Array(144)
 
     setInterval ((x) ->
       i = 0
@@ -31,6 +33,18 @@ class SayHello extends EventEmitter
             color = tinycolor(x.color)
             rgb = color.toRgb()
             x.pixelData[i] = rgb2Int(rgb.r, rgb.g, rgb.b)
+          when 'slide'
+            rgb1 = tinycolor("green").toRgb()
+            rgb2 = tinycolor("orange").toRgb()
+            rgb3 = tinycolor("red").toRgb()
+            if (i + 1) < x.slide
+              x.pixelData[i] = rgb2Int(rgb1.r, rgb1.g, rgb1.b)
+            else if (i + 1) == x.slide
+              x.pixelData[i] = rgb2Int(rgb2.r, rgb2.g, rgb2.b)
+            else if (i + 1) <= x.slidemax
+              x.pixelData[i] = rgb2Int(rgb3.r, rgb3.g, rgb3.b)
+            else
+              x.pixelData[i] = 0
           when 'colorwheel'
             x.pixelData[i] = colorwheel(i, x.offset)
           when 'twinkle'
@@ -56,11 +70,16 @@ class SayHello extends EventEmitter
     @color = color
 
   setMode: ({ mode }) =>
+    if mode.indexOf("slide") == 0
+      x = mode.indexOf("/")
+      @slide = parseInt(mode.substring(5, x))
+      @slidemax = parseInt(mode.substring(x+1))
+      mode = "slide"
     @mode = mode
 
   onConfig: (device={}) =>
     { @greeting } = device.options ? {}
-    { @numleds } = device.options ? {}
+    #{ @numleds } = device.options ? {}
     debug 'on config', @options
 
   rgb2Int = (r, g, b) =>
