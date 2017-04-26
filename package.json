@@ -20,7 +20,7 @@
     "meshblu",
     "connector"
   ],
-  "author": "James Bulpin/John Moody <npm@octoblu.com>",
+  "author": "James Bulpin/John Moody <james.bulpin@citrix.com>",
   "license": "MIT",
   "bugs": {
     "url": "https://github.com/jamesbulpin/meshblu-connector-ws2811/issues"

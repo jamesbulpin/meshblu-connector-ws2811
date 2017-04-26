@@ -5,15 +5,15 @@ tinycolor       = require 'tinycolor2'
 
 class SayHello extends EventEmitter
   constructor: ->
-    @numleds = 144
+    @numleds = 50
     @offset = 0
     @color = "red"
     @mode = "colorwheel"
     @slide = 0
-    @slidemax = 144
-    ws281x.init 144
-    @pixelData = new Uint32Array(144)
-    @modulate = new Uint32Array(144)
+    @slidemax = 50
+    ws281x.init 50
+    @pixelData = new Uint32Array(50)
+    @modulate = new Uint32Array(50)
 
     setInterval ((x) ->
       i = 0
