@@ -8,6 +8,15 @@ properties:
         type: 'string'
       color:
         type: 'string'
+      slide:
+        type: 'string'
+        title: 'Slide number for slide mode'
+      slidemax:
+        type: 'string'
+        title: 'Slide count for slide mode'
+      percent:
+        type: 'string'
+        title: 'Percentage for percent mode'
     required: [
       'mode'
     ]

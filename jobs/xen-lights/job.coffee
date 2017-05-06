@@ -9,9 +9,10 @@ class XenLights
 
     {mode} = data
     @connector.setMode {mode}
-    if data?.color?
-      {color} = data
-      @connector.setColor {color}
+    @connector.setColor data.color if data?.color?
+    @connector.setSlide data.slide if data?.slide?
+    @connector.setSlideMax data.slidemax if data?.slidemax?
+    @connector.setPercent data.percent if data?.percent?
 
     metadata =
       code: 200

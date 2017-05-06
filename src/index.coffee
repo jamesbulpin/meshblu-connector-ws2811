@@ -13,6 +13,7 @@ class Ws2811Leds extends EventEmitter
     @mode = "off"
     @slide = 0
     @slidemax = @numleds
+    @percent = 100
     @pixelData = new Uint32Array(@numleds)
     @modulate = new Uint32Array(@numleds)
 
@@ -52,6 +53,14 @@ class Ws2811Leds extends EventEmitter
             x.pixelData[i] = x.colorwheel(i, x.offset)
           when 'twinkle'
             x.pixelData[i] = x.colorwheel(i, x.offset) * x.modulate[i]
+          when 'percent'
+            threshold = Math.round((x.percent/100.0)*x.numleds)
+            color = tinycolor(x.color)
+            rgb = color.toRgb()
+            if i < threshold
+              x.pixelData[i] = x.rgb2Int(rgb.r, rgb.g, rgb.b)
+            else
+              x.pixelData[i] = 0
 
         i++
       x.offset = x.offset + 1
@@ -66,16 +75,25 @@ class Ws2811Leds extends EventEmitter
     debug 'on close'
     callback()
 
-  setColor: ({ color }) =>
+  setColor: (color) =>
     @color = color
+    debug 'color', @color
+
+  setSlide: (slide) =>
+    @slide = parseInt(slide)
+    debug 'slide', @slide
+
+  setSlideMax: (slidemax) =>
+    @slidemax = parseInt(slidemax)
+    @debug 'slidemax', @slidemax
+
+  setPercent: (percent) =>
+    @percent = parseInt(percent)
+    debug 'percent', @percent
 
   setMode: ({ mode }) =>
-    if mode.indexOf("slide") == 0
-      x = mode.indexOf("/")
-      @slide = parseInt(mode.substring(5, x))
-      @slidemax = parseInt(mode.substring(x+1))
-      mode = "slide"
     @mode = mode
+    debug 'mode', @mode
 
   onConfig: (device={}) =>
     debug 'on config', device.options

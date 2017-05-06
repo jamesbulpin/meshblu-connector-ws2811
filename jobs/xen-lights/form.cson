@@ -1,4 +1,7 @@
 angular: [
   { key: "data.mode" }
   { key: "data.color" }
+  { key: "data.slide" }
+  { key: "data.slidemax" }
+  { key: "data.percent" }
 ]
