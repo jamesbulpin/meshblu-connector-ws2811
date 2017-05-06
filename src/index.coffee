@@ -99,7 +99,7 @@ class Ws2811Leds extends EventEmitter
 
   setSlideMax: (slidemax) =>
     @slidemax = parseInt(slidemax)
-    @debug 'slidemax', @slidemax
+    debug 'slidemax', @slidemax
 
   setPercent: (percent) =>
     @percent = parseInt(percent)
