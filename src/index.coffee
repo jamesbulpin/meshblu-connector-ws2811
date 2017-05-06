@@ -3,7 +3,7 @@ debug           = require('debug')('meshblu-connector-say-hello:index')
 ws281x          = require 'rpi-ws281x-native'
 tinycolor       = require 'tinycolor2'
 
-class SayHello extends EventEmitter
+class Ws2811Leds extends EventEmitter
   constructor: ->
     @numleds = 50
     @offset = 0
@@ -63,9 +63,6 @@ class SayHello extends EventEmitter
     debug 'on close'
     callback()
 
-  getResponse: () =>
-    return "#{@color}, #{@mode}"
-
   setColor: ({ color }) =>
     @color = color
 
@@ -78,9 +75,8 @@ class SayHello extends EventEmitter
     @mode = mode
 
   onConfig: (device={}) =>
-    { @greeting } = device.options ? {}
-    #{ @numleds } = device.options ? {}
     debug 'on config', @options
+    #{ @numleds } = device.options ? {}
 
   rgb2Int = (r, g, b) =>
     ((r & 0xff) << 8) + ((g & 0xff) << 16) + (b & 0xff)
@@ -104,4 +100,4 @@ class SayHello extends EventEmitter
 
 
 
-module.exports = SayHello
+module.exports = Ws2811Leds

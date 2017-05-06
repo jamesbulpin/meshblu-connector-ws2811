@@ -6,7 +6,6 @@ describe 'XenLights', ->
       @connector =
         setColor: =>
         setMode: =>
-        getResponse: =>
       message =
         data:
           mode: 'colorwheel'

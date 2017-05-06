@@ -17,9 +17,6 @@ class XenLights
       code: 200
       status: http.STATUS_CODES[200]
 
-    data =
-      response: @connector.getResponse()
-
     callback null, {metadata, data}
 
   _userError: (code, message) =>
