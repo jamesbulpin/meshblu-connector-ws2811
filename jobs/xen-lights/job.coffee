@@ -13,6 +13,7 @@ class XenLights
     @connector.setSlide data.slide if data?.slide?
     @connector.setSlideMax data.slidemax if data?.slidemax?
     @connector.setPercent data.percent if data?.percent?
+    @connector.setConfig data.config if data?.config?
 
     metadata =
       code: 200

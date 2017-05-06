@@ -17,6 +17,9 @@ properties:
       percent:
         type: 'string'
         title: 'Percentage for percent mode'
+      config:
+        type: 'string'
+        title: 'Direct control of LEDs (pass {{msg}})'
     required: [
       'mode'
     ]

@@ -14,6 +14,7 @@ class Ws2811Leds extends EventEmitter
     @slide = 0
     @slidemax = @numleds
     @percent = 100
+    @directcontrol = undefined
     @pixelData = new Uint32Array(@numleds)
     @modulate = new Uint32Array(@numleds)
 
@@ -61,6 +62,19 @@ class Ws2811Leds extends EventEmitter
               x.pixelData[i] = x.rgb2Int(rgb.r, rgb.g, rgb.b)
             else
               x.pixelData[i] = 0
+          when 'direct'
+            colortxt = undefined
+            if x.directcontrol?.groups?
+              for group in x.directcontrol.groups
+                if group.leds?
+                  if group.leds.indexOf(i) > -1
+                    colortxt = group.color
+            if colortxt
+              color = tinycolor(colortxt)
+              rgb = color.toRgb()
+              x.pixelData[i] = x.rgb2Int(rgb.r, rgb.g, rgb.b)
+            else
+              x.pixelData[i] = 0
 
         i++
       x.offset = x.offset + 1
@@ -90,6 +104,10 @@ class Ws2811Leds extends EventEmitter
   setPercent: (percent) =>
     @percent = parseInt(percent)
     debug 'percent', @percent
+
+  setConfig: (config) =>
+    @directcontrol = config
+    debug 'directcontrol', @directcontrol
 
   setMode: ({ mode }) =>
     @mode = mode
