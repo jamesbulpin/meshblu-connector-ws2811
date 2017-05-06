@@ -20,6 +20,8 @@ build:
         code: |
           compile "$WERCKER_SOURCE_DIR" "$WERCKER_OUTPUT_DIR"
           mv "${WERCKER_OUTPUT_DIR}/app-linux-arm.tar.gz" "${WERCKER_OUTPUT_DIR}/ws2811-linux-arm.tar.gz"
+          cd "$WERCKER_SOURCE_DIR" && /opt/node/bin/npm run generate:schema
+          mv "${WERCKER_SOURCE_DIR}/schemas.json" "${WERCKER_OUTPUT_DIR}/schemas.json"
     # - internal/store-container
 deploy:
   steps:
@@ -27,9 +29,16 @@ deploy:
         name: upload to github
         code: |
           echo "Releasing: $(cat "${WERCKER_ROOT}/VERSION")"
+          github-release release -u jamesbulpin -r meshblu-connector-ws2811 --tag "$(cat "${WERCKER_ROOT}/VERSION")" || echo "Already released, skipping"
           github-release upload \
             --user jamesbulpin \
             --repo meshblu-connector-ws2811 \
             --tag "$(cat "${WERCKER_ROOT}/VERSION")" \
             --name "ws2811-linux-arm.tar.gz" \
             --file "${WERCKER_ROOT}/ws2811-linux-arm.tar.gz"
+          github-release upload \
+            --user jamesbulpin \
+            --repo meshblu-connector-ws2811 \
+            --tag "$(cat "${WERCKER_ROOT}/VERSION")" \
+            --name "schemas.json" \
+            --file "${WERCKER_ROOT}/schemas.json"
