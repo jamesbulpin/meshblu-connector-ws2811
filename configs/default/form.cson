@@ -1,3 +1,6 @@
 angular: [
   { key: "options.numleds" }
+  { key: "options.swapRG" }
+  { key: "options.mode" }
+  { key: "options.color" }
 ]

@@ -9,5 +9,16 @@ properties:
         title: "Number of LEDS"
         type: "integer"
         default: 50
+      swapRG:
+        title: "Swap red and green"
+        type: "boolean"
+      mode:
+        title: "Initial mode"
+        type: "string"
+        default: "solid"
+      color:
+        title: "Initial color"
+        type: "string"
     required: [
+      'numleds'
     ]

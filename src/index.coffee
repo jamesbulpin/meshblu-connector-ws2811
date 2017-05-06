@@ -1,19 +1,20 @@
 {EventEmitter}  = require 'events'
-debug           = require('debug')('meshblu-connector-say-hello:index')
+debug           = require('debug')('meshblu-connector-ws2811:index')
 ws281x          = require 'rpi-ws281x-native'
 tinycolor       = require 'tinycolor2'
 
 class Ws2811Leds extends EventEmitter
   constructor: ->
     @numleds = 50
+    @initializedAs = -1
+    @swapRG = false
     @offset = 0
     @color = "red"
-    @mode = "colorwheel"
+    @mode = "off"
     @slide = 0
-    @slidemax = 50
-    ws281x.init 50
-    @pixelData = new Uint32Array(50)
-    @modulate = new Uint32Array(50)
+    @slidemax = @numleds
+    @pixelData = new Uint32Array(@numleds)
+    @modulate = new Uint32Array(@numleds)
 
     setInterval ((x) ->
       i = 0
@@ -25,30 +26,32 @@ class Ws2811Leds extends EventEmitter
             x.modulate[i] = 0
 
         switch x.mode
+          when 'off'
+            x.pixelData[i] = 0
           when 'color'
             color = tinycolor(x.color)
             rgb = color.toRgb()
-            x.pixelData[i] = rgb2Int(rgb.r, rgb.g, rgb.b)
+            x.pixelData[i] = x.rgb2Int(rgb.r, rgb.g, rgb.b)
           when 'solid'
             color = tinycolor(x.color)
             rgb = color.toRgb()
-            x.pixelData[i] = rgb2Int(rgb.r, rgb.g, rgb.b)
+            x.pixelData[i] = x.rgb2Int(rgb.r, rgb.g, rgb.b)
           when 'slide'
             rgb1 = tinycolor("green").toRgb()
             rgb2 = tinycolor("orange").toRgb()
             rgb3 = tinycolor("red").toRgb()
             if (i + 1) < x.slide
-              x.pixelData[i] = rgb2Int(rgb1.r, rgb1.g, rgb1.b)
+              x.pixelData[i] = x.rgb2Int(rgb1.r, rgb1.g, rgb1.b)
             else if (i + 1) == x.slide
-              x.pixelData[i] = rgb2Int(rgb2.r, rgb2.g, rgb2.b)
+              x.pixelData[i] = x.rgb2Int(rgb2.r, rgb2.g, rgb2.b)
             else if (i + 1) <= x.slidemax
-              x.pixelData[i] = rgb2Int(rgb3.r, rgb3.g, rgb3.b)
+              x.pixelData[i] = x.rgb2Int(rgb3.r, rgb3.g, rgb3.b)
             else
               x.pixelData[i] = 0
           when 'colorwheel'
-            x.pixelData[i] = colorwheel(i, x.offset)
+            x.pixelData[i] = x.colorwheel(i, x.offset)
           when 'twinkle'
-            x.pixelData[i] = colorwheel(i, x.offset) * x.modulate[i]
+            x.pixelData[i] = x.colorwheel(i, x.offset) * x.modulate[i]
 
         i++
       x.offset = x.offset + 1
@@ -75,23 +78,36 @@ class Ws2811Leds extends EventEmitter
     @mode = mode
 
   onConfig: (device={}) =>
-    debug 'on config', @options
-    #{ @numleds } = device.options ? {}
+    debug 'on config', device.options
+    { @numleds, @swapRG } = device.options ? {}
+    @mode = device.options.mode if device?.options?.mode?
+    @color = device.options.color if device?.options?.color?
+    if @initializedAs != @numleds
+      debug 'initialising ws281x driver for LED count', @numleds
+      ws281x.init @numleds
+      @initializedAs = @numleds
+    @pixelData = new Uint32Array(@numleds)
+    @modulate = new Uint32Array(@numleds)
+    debug 'mode and color are', @mode, @color
+    debug 'swapRG', @swapRG
+    
+  rgb2Int: (r, g, b) =>
+    if @swapRG
+      ((r & 0xff) << 8) + ((g & 0xff) << 16) + (b & 0xff)
+    else
+      ((r & 0xff) << 16) + ((g & 0xff) << 8) + (b & 0xff)
 
-  rgb2Int = (r, g, b) =>
-    ((r & 0xff) << 8) + ((g & 0xff) << 16) + (b & 0xff)
-
-  colorwheel = (pos, offset) =>
+  colorwheel: (pos, offset) =>
     pos = (pos + offset) % 256
     pos = 255 - pos
     if pos < 85
-      rgb2Int 255 - (pos * 3), 0, pos * 3
+      @rgb2Int 255 - (pos * 3), 0, pos * 3
     else if pos < 170
       pos -= 85
-      rgb2Int 0, pos * 3, 255 - (pos * 3)
+      @rgb2Int 0, pos * 3, 255 - (pos * 3)
     else
       pos -= 170
-      rgb2Int pos * 3, 255 - (pos * 3), 0
+      @rgb2Int pos * 3, 255 - (pos * 3), 0
 
   start: (device, callback) =>
     debug 'started'
