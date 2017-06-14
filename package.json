@@ -1,6 +1,6 @@
 {
   "name": "meshblu-connector-ws2811",
-  "version": "0.2.2",
+  "version": "0.2.3",
   "description": "Meshblu connector for WS2811 LEDs",
   "main": "index.js",
   "scripts": {
